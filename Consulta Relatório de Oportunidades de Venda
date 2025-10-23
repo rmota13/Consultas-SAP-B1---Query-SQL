@@ -1,0 +1,22 @@
+SELECT
+[T0].[OpprId] AS [ID_Oportunidade],
+[T0].[Memo] AS [Nome_Oportunidade],
+[T0].[CardCode] AS [Codigo_Cliente],
+[T1].[CardName] AS [Nome_Cliente],
+[T2].[SlpName] AS [Nome_Vendedor],
+[T0].[OpenDate] AS [Data_Inicio],
+[T0].[PredDate] AS [Data_Prev_Fechamento],
+[T0].[CloseDate] AS [Data_Fechamento_Real],
+[T0].[MaxSumLoc] AS [Valor_Potencial_Total],
+[T0].[WtdSumLoc] AS [Valor_Ponderado],
+CASE [T0].[Status]
+WHEN 'O' THEN 'Aberta'
+WHEN 'W' THEN 'Ganha'
+WHEN 'L' THEN 'Perdida'
+ELSE [T0].[Status]
+END AS [Status_Oportunidade],
+[T0].[Reason] AS [Motivo_Fechamento]
+FROM [OOPR] AS [T0]
+LEFT JOIN [OCRD] AS [T1] ON [T0].[CardCode] = [T1].[CardCode]
+LEFT JOIN [OSLP] AS [T2] ON [T0].[SlpCode] = [T2].[SlpCode]
+ORDER BY [T0].[OpenDate] DESC;
