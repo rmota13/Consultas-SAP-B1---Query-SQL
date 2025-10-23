@@ -12,7 +12,20 @@ CASE [T0].[Action] WHEN 'C' THEN 'Ligação Telefônica' WHEN 'M' THEN 'Reunião
 [T0].[Recontact] AS [Data_Recontato],
 [T0].[Notes] AS [Observacoes],
 [T0].[Details] AS [Conteudo_Detalhes],
-[T0].[DocType] AS [Documento_Tipo_Relacionado],
+CASE [T0].[DocType]
+WHEN '2' THEN 'Parceiro de Negócio'
+WHEN '4' THEN 'Cadastro de Item'
+WHEN '13' THEN 'Fatura de Venda'
+WHEN '14' THEN 'Devolução de Venda (NC)'
+WHEN '15' THEN 'Entrega (Guia de Remessa)'
+WHEN '17' THEN 'Pedido de Venda'
+WHEN '18' THEN 'Fatura de Compra'
+WHEN '20' THEN 'Recebimento de Mercadoria (Compra)'
+WHEN '21' THEN 'Devolução de Compra (NC)'
+WHEN '22' THEN 'Pedido de Compra'
+WHEN '23' THEN 'Cotação de Venda'
+ELSE [T0].[DocType]
+END AS [Documento_Tipo_Nome],
 [T0].[DocEntry] AS [Documento_ID_Relacionado],
 CASE [T0].[Closed] WHEN 'Y' THEN 'Sim' WHEN 'N' THEN 'Não' END AS [Atividade_Fechada],
 [T0].[Priority] AS [Prioridade]
