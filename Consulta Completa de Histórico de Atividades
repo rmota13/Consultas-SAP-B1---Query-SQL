@@ -1,0 +1,23 @@
+SELECT
+[T0].[ClgCode] AS [ID_Atividade],
+CASE [T0].[Action] WHEN 'C' THEN 'Ligação Telefônica' WHEN 'M' THEN 'Reunião' WHEN 'T' THEN 'Tarefa' WHEN 'N' THEN 'Nota' WHEN 'P' THEN 'Campanha' ELSE 'Outro' END AS [Tipo_Atividade],
+[T3].[Name] AS [Assunto_Descricao],
+[T2].[U_NAME] AS [Usuario_Atribuido_A],
+[T0].[CardCode] AS [Codigo_PN],
+[T1].[CardName] AS [Nome_PN],
+[T0].[CntctDate] AS [Data_Inicio],
+[T0].[CntctTime] AS [Hora_Inicio],
+[T0].[EndDate] AS [Data_Fim],
+[T0].[EndTime] AS [Hora_Fim],
+[T0].[Recontact] AS [Data_Recontato],
+[T0].[Notes] AS [Observacoes],
+[T0].[Details] AS [Conteudo_Detalhes],
+[T0].[DocType] AS [Documento_Tipo_Relacionado],
+[T0].[DocEntry] AS [Documento_ID_Relacionado],
+CASE [T0].[Closed] WHEN 'Y' THEN 'Sim' WHEN 'N' THEN 'Não' END AS [Atividade_Fechada],
+[T0].[Priority] AS [Prioridade]
+FROM [OCLG] AS [T0]
+LEFT JOIN [OCRD] AS [T1] ON [T0].[CardCode] = [T1].[CardCode]
+LEFT JOIN [OUSR] AS [T2] ON [T0].[AttendUser] = [T2].[USERID]
+LEFT JOIN [OCLS] AS [T3] ON [T0].[CntctSbjct] = [T3].[Code]
+ORDER BY [T0].[CntctDate] DESC, [T0].[CntctTime] DESC;
