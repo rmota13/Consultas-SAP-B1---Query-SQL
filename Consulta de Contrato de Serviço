@@ -1,0 +1,24 @@
+SELECT
+[T0].[ContractID] AS [N_Contrato],
+[T0].[CstmrCode] AS [Codigo_Cliente],
+[T1].[CardName] AS [Nome_Cliente],
+[T0].[CntrcTmplt] AS [Tipo_Contrato],
+[T0].[Descriptio] AS [Descricao_Contrato],
+[T0].[StartDate] AS [Data_Inicio],
+[T0].[EndDate] AS [Data_Final],
+[T0].[TermDate] AS [Data_Rescisao],
+[T0].[Remarks1] AS [Observacoes],
+CASE [T0].[Status]
+WHEN 'A' THEN 'Autorizado'
+WHEN 'P' THEN 'Pendente'
+WHEN 'D' THEN 'Esboço'
+WHEN 'T' THEN 'Encerrado'
+WHEN 'F' THEN 'Congelado'
+ELSE [T0].[Status]
+END AS [Status_Contrato],
+[T3].[firstName] + ' ' + [T3].[lastName] AS [Titular_Nome],
+CAST([T0].[RemindVal] AS VARCHAR(10)) + ' ' + CASE [T0].[RemindUnit] WHEN 'D' THEN 'Dias' WHEN 'W' THEN 'Semanas' WHEN 'M' THEN 'Meses' ELSE '' END AS [Lembrete]
+FROM [OCTR] AS [T0]
+LEFT JOIN [OCRD] AS [T1] ON [T0].[CstmrCode] = [T1].[CardCode]
+LEFT JOIN [OHEM] AS [T3] ON [T0].[Owner] = [T3].[empID]
+ORDER BY [T0].[StartDate] DESC;
