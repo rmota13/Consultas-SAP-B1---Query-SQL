@@ -1,0 +1,49 @@
+SELECT
+[T_Main].[TransNum],
+[T_Main].[ItemCode],
+[T_ITM].[ItemName] AS [Nome_Produto],
+[T_Main].[DocDate],
+[T_Main].[Warehouse] AS [Codigo_Deposito],
+[T_WHS].[WhsName] AS [Nome_Deposito],
+[T_Main].[InQty],
+[T_Main].[OutQty],
+[T_Main].[Price],
+[T_Main].[TipoDeMovimento],
+[T_Main].[NomeParceiro],
+[T_Main].[NumeroDocumentoOrigem]
+FROM
+(
+SELECT
+[T0].[TransNum],
+[T0].[ItemCode],
+[T0].[DocDate],
+[T0].[Warehouse],
+[T0].[InQty],
+[T0].[OutQty],
+[T0].[Price],
+CASE [T0].[TransType]
+WHEN 13 THEN 'Venda (Nota Fiscal de Saída)'
+WHEN 14 THEN 'Devolução de Venda'
+WHEN 15 THEN 'Entrega de Mercadoria'
+WHEN 16 THEN 'Devolução de Mercadoria'
+WHEN 18 THEN 'Entrada por Compra (Nota Fiscal de Entrada)'
+WHEN 20 THEN 'Entrada por Compra (Recebimento)'
+WHEN 21 THEN 'Devolução de Compra'
+WHEN 59 THEN 'Entrada de Mercadoria (sem compra)'
+WHEN 60 THEN 'Saída de Mercadoria (diversa)'
+WHEN 67 THEN 'Transferência de Estoque'
+ELSE 'Outro Movimento'
+END AS [TipoDeMovimento],
+COALESCE([T_INV].[CardName], [T_PCH].[CardName], [T_DLN].[CardName], [T_PDN].[CardName], [T_RIN].[CardName], [T_RPD].[CardName], [T_RPC].[CardName]) AS [NomeParceiro],
+COALESCE(CAST([T_INV].[DocNum] AS VARCHAR(30)), CAST([T_PCH].[DocNum] AS VARCHAR(30)), CAST([T_DLN].[DocNum] AS VARCHAR(30)), CAST([T_PDN].[DocNum] AS VARCHAR(30)), CAST([T_RIN].[DocNum] AS VARCHAR(30)), CAST([T_RPD].[DocNum] AS VARCHAR(30)), CAST([T_RPC].[DocNum] AS VARCHAR(30))) AS [NumeroDocumentoOrigem]
+FROM [OINM] AS [T0]
+LEFT JOIN [OINV] AS [T_INV] ON [T0].[CreatedBy] = [T_INV].[DocEntry] AND [T0].[TransType] = 13
+LEFT JOIN [OPCH] AS [T_PCH] ON [T0].[CreatedBy] = [T_PCH].[DocEntry] AND [T0].[TransType] = 18
+LEFT JOIN [ODLN] AS [T_DLN] ON [T0].[CreatedBy] = [T_DLN].[DocEntry] AND [T0].[TransType] = 15
+LEFT JOIN [OPDN] AS [T_PDN] ON [T0].[CreatedBy] = [T_PDN].[DocEntry] AND [T0].[TransType] = 20
+LEFT JOIN [ORIN] AS [T_RIN] ON [T0].[CreatedBy] = [T_RIN].[DocEntry] AND [T0].[TransType] = 14
+LEFT JOIN [ORPD] AS [T_RPD] ON [T0].[CreatedBy] = [T_RPD].[DocEntry] AND [T0].[TransType] = 16
+LEFT JOIN [ORPC] AS [T_RPC] ON [T0].[CreatedBy] = [T_RPC].[DocEntry] AND [T0].[TransType] = 21
+) AS [T_Main]
+LEFT JOIN [OWHS] AS [T_WHS] ON [T_Main].[Warehouse] = [T_WHS].[WhsCode]
+LEFT JOIN [OITM] AS [T_ITM] ON [T_Main].[ItemCode] = [T_ITM].[ItemCode];
