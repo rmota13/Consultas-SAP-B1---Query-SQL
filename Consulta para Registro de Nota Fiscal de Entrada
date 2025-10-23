@@ -1,0 +1,23 @@
+SELECT
+[T0].[DocNum] AS [Numero_NF_Entrada],
+[T0].[DocEntry] AS [ID_Interno_Documento],
+CASE [T0].[DocStatus] WHEN 'O' THEN 'Aberto' WHEN 'C' THEN 'Fechado' ELSE [T0].[DocStatus] END AS [Status_Documento],
+[T0].[DocDate] AS [Data_Lancamento],
+[T0].[DocDueDate] AS [Data_Vencimento],
+[T0].[CardCode] AS [Codigo_Fornecedor],
+[T0].[CardName] AS [Nome_Fornecedor],
+[T1].[LineNum] AS [Linha_Numero],
+[T1].[ItemCode] AS [Codigo_Item],
+[T1].[Dscription] AS [Descricao_Item_Servico],
+[T1].[Quantity] AS [Quantidade],
+[T1].[Price] AS [Preco_Unitario_Liquido],
+[T1].[LineTotal] AS [Total_Linha_Liquido],
+[T1].[AcctCode] AS [Conta_Contabil_Linha],
+[T1].[OcrCode] AS [Centro_Custo_1],
+[T1].[OcrCode2] AS [Centro_Custo_2],
+[T1].[VatGroup] AS [Codigo_Imposto],
+[T1].[VatSum] AS [Valor_Imposto_Linha],
+[T0].[DocTotal] AS [Total_Geral_Documento]
+FROM [OPCH] AS [T0]
+INNER JOIN [PCH1] AS [T1] ON [T0].[DocEntry] = [T1].[DocEntry]
+WHERE [T0].[DocDate] >= '2023-01-01'; -- Exemplo de filtro por data, ajuste conforme necessário
