@@ -1,0 +1,29 @@
+SELECT
+[T0].[ContractID] AS [N_Contrato],
+[T0].[CstmrCode] AS [Codigo_Cliente],
+[T1].[CardName] AS [Nome_Cliente],
+[T5].[Name] AS [Nome_Pessoa_Contato],
+[T0].[Descriptio] AS [Descricao_Contrato],
+[T0].[StartDate] AS [Data_Inicio],
+[T0].[EndDate] AS [Data_Final],
+[T0].[TermDate] AS [Data_Rescisao],
+CAST([T0].[Remarks2] AS NVARCHAR(MAX)) AS [Observacoes],
+CASE [T0].[Status]
+WHEN 'A' THEN 'Autorizado'
+WHEN 'P' THEN 'Pendente'
+WHEN 'D' THEN 'Esboço'
+WHEN 'T' THEN 'Encerrado'
+WHEN 'F' THEN 'Congelado'
+ELSE [T0].[Status]
+END AS [Status_Contrato],
+[T3].[firstName] + ' ' + [T3].[lastName] AS [Titular_Nome],
+CAST([T0].[RemindVal] AS VARCHAR(10)) + ' ' + CASE [T0].[RemindUnit] WHEN 'D' THEN 'Dias' WHEN 'W' THEN 'Semanas' WHEN 'M' THEN 'Meses' ELSE '' END AS [Lembrete],
+CASE [T0].[Renewal] WHEN 'Y' THEN 'Sim' ELSE 'Não' END AS [Renovacao_Automatica],
+CAST([T0].[Duration] AS VARCHAR(10)) AS [Duracao_Contrato],
+[T0].[U_ZTH_ContratoPai] AS [Contrato_Pai_UDF],
+[T0].[U_ZTH_FormaEnvio] AS [Forma_Envio_UDF]
+FROM [OCTR] AS [T0]
+LEFT JOIN [OCRD] AS [T1] ON [T0].[CstmrCode] = [T1].[CardCode]
+LEFT JOIN [OHEM] AS [T3] ON [T0].[Owner] = [T3].[empID]
+LEFT JOIN [OCPR] AS [T5] ON [T0].[CntctCode] = [T5].[CntctCode] AND [T0].[CstmrCode] = [T5].[CardCode]
+ORDER BY [T0].[StartDate] DESC;
