@@ -1,0 +1,11 @@
+SELECT
+[T0].[PrcCode] AS [Codigo_Centro_Custo],
+[T0].[PrcName] AS [Nome_Centro_Custo],
+[T0].[DimCode] AS [Dimensao_Numero],
+CASE
+WHEN [T0].[DimCode] = 1 THEN 'Negócio'
+WHEN [T0].[DimCode] = 2 THEN 'Departamento'
+ELSE 'Outra Dimensao'
+END AS [Nome_Dimensao]
+FROM [OPRC] AS [T0]
+WHERE [T0].[DimCode] IN (1, 2); -- Filtro para buscar registros apenas das Dimensões 1 e 2
