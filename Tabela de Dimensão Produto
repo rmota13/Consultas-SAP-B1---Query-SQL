@@ -1,0 +1,16 @@
+SELECT
+[T0].[ItemCode] AS [Codigo_Item],
+[T0].[ItemName] AS [Nome_Item],
+[T1].[ItmsGrpNam] AS [Nome_Grupo_Item],
+[T0].[BuyUnitMsr] AS [Unidade_Medida_Compra],
+[T0].[SalUnitMsr] AS [Unidade_Medida_Venda],
+[T0].[OnHand] AS [Estoque_Total_Sistema],
+[T2].[FirmName] AS [Fabricante],
+CASE [T0].[frozenFor] WHEN 'Y' THEN 'Inativo' WHEN 'N' THEN 'Ativo' ELSE 'Ativo' END AS [Status_Item],
+[T3].[Price] AS [Preco_Unitario_Lista_1],
+[T0].[U_Assunto] AS [Assunto],
+[T0].[U_ZTH_Periodicidade] AS [Periodicidade]
+FROM [OITM] AS [T0]
+LEFT JOIN [OITB] AS [T1] ON [T0].[ItmsGrpCod] = [T1].[ItmsGrpCod]
+LEFT JOIN [OMRC] AS [T2] ON [T0].[FirmCode] = [T2].[FirmCode]
+LEFT JOIN [ITM1] AS [T3] ON [T0].[ItemCode] = [T3].[ItemCode] AND [T3].[PriceList] = 1;
