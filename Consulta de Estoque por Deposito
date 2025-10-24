@@ -1,0 +1,13 @@
+SELECT
+[T0].[ItemCode] AS [Codigo_Item],
+[T1].[ItemName] AS [Nome_Item],
+[T0].[WhsCode] AS [Codigo_Deposito],
+[T2].[WhsName] AS [Nome_Deposito],
+[T0].[OnHand] AS [Estoque_Disponivel],
+[T0].[IsCommited] AS [Saida_Prevista],
+[T0].[OnOrder] AS [Estoque_Em_Ordem]
+FROM [OITW] AS [T0]
+INNER JOIN [OITM] AS [T1] ON [T0].[ItemCode] = [T1].[ItemCode]
+INNER JOIN [OWHS] AS [T2] ON [T0].[WhsCode] = [T2].[WhsCode]
+WHERE [T0].[OnHand] > 0
+ORDER BY [T1].[ItemName], [T2].[WhsName];
