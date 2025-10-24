@@ -1,0 +1,26 @@
+SELECT
+[T0].[DocNum] AS [Numero_Pedido],
+[T0].[DocDate] AS [Data_Documento],
+[T0].[DocDueDate] AS [Data_Entrega_Desejada],
+[T0].[CardCode] AS [Codigo_Cliente],
+[T0].[CardName] AS [Nome_Cliente],
+CASE [T0].[DocStatus] WHEN 'O' THEN 'Aberto' WHEN 'C' THEN 'Fechado' ELSE [T0].[DocStatus] END AS [Status_Documento],
+[T1].[ItemCode] AS [Codigo_Item],
+[T1].[Dscription] AS [Descricao_Item],
+[T1].[Quantity] AS [Quantidade_Pedida],
+[T1].[Price] AS [Preco_Unitario],
+[T1].[LineTotal] AS [Total_Linha],
+[T0].[DocTotal] AS [Total_Documento],
+[T3].[SlpName] AS [Vendedor],
+[T4].[firstName] + ' ' + [T4].[lastName] AS [Titular],
+[T5].[Usage] AS [Uso_Principal],
+[T6].[PymntGroup] AS [Condicao_Pagamento],
+[T7].[PayMethCod] AS [Forma_Pagamento]
+FROM [ORDR] AS [T0]
+INNER JOIN [RDR1] AS [T1] ON [T0].[DocEntry] = [T1].[DocEntry]
+LEFT JOIN [OSLP] AS [T3] ON [T0].[SlpCode] = [T3].[SlpCode]
+LEFT JOIN [OHEM] AS [T4] ON [T0].[OwnerCode] = [T4].[empID]
+LEFT JOIN [OUSG] AS [T5] ON [T1].[Usage] = [T5].[ID]
+LEFT JOIN [OCTG] AS [T6] ON [T0].[GroupNum] = [T6].[GroupNum]
+LEFT JOIN [OPYM] AS [T7] ON [T0].[PeyMethod] = [T7].[PayMethCod]
+ORDER BY [T0].[DocNum] DESC;
