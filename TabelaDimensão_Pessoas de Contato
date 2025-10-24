@@ -1,0 +1,14 @@
+SELECT
+[T0].[CardCode] AS [Codigo_PN],
+[T1].[CardName] AS [Nome_PN],
+[T0].[Name] AS [Nome_Contato],
+[T0].[Tel1] AS [Telefone_Contato],
+[T0].[E_MailL] AS [Email_Contato],
+CASE [T0].[Gender]
+WHEN 'M' THEN 'Masculino'
+WHEN 'F' THEN 'Feminino'
+WHEN 'N' THEN 'Não Especificado'
+ELSE 'Outro'
+END AS [Sexo_Contato]
+FROM [OCPR] AS [T0]
+INNER JOIN [OCRD] AS [T1] ON [T0].[CardCode] = [T1].[CardCode];
