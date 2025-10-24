@@ -1,0 +1,34 @@
+SELECT
+[T0].[CardCode] AS [Codigo_PN],
+[T0].[CardName] AS [Nome_PN],
+[T0].[Balance] AS [Saldo_PN],
+[T0].[Phone2] AS [DDD],
+[T0].[Phone1] AS [Telefone],
+[T0].[Cellular] AS [Celular],
+[T0].[E_Mail] AS [Email_Principal],
+[T2].[GroupName] AS [Nome_Grupo_PN],
+[T0].[CreateDate] AS [Data_Criacao],
+[T0].[Notes] AS [Observacoes_Gerais],
+[T0].[LicTradNum] AS [CNPJ_CPF],
+[T_TX].[TaxId0] AS [Inscricao_Estadual_IE],
+[T_TX].[TaxId1] AS [Inscricao_Municipal_IM],
+[T0].[AddrType] AS [Cobranca_Tipo_Endereco],
+[T0].[Address] AS [Cobranca_Rua],
+[T0].[StreetNo] AS [Cobranca_Numero],
+[T0].[Block] AS [Cobranca_Bairro],
+[T0].[City] AS [Cobranca_Cidade],
+[T_ST_C].[Name] AS [Cobranca_Estado],
+[T0].[ZipCode] AS [Cobranca_CEP],
+[T1].[AddrType] AS [Entrega_Tipo_Endereco],
+[T1].[Street] AS [Entrega_Rua],
+[T1].[StreetNo] AS [Entrega_Numero_Rua],
+[T1].[Block] AS [Entrega_Bairro],
+[T1].[City] AS [Entrega_Cidade],
+[T_ST_E].[Name] AS [Entrega_Estado],
+[T1].[ZipCode] AS [Entrega_CEP]
+FROM [OCRD] AS [T0]
+LEFT JOIN [CRD1] AS [T1] ON [T0].[CardCode] = [T1].[CardCode] AND [T0].[ShipToDef] = [T1].[Address]
+LEFT JOIN [OCRG] AS [T2] ON [T0].[GroupCode] = [T2].[GroupCode]
+LEFT JOIN [OCST] AS [T_ST_C] ON [T0].[County] = [T_ST_C].[Code] AND [T0].[Country] = [T_ST_C].[Country]
+LEFT JOIN [OCST] AS [T_ST_E] ON [T1].[State] = [T_ST_E].[Code] AND [T1].[Country] = [T_ST_E].[Country]
+LEFT JOIN [CRD7] AS [T_TX] ON [T0].[CardCode] = [T_TX].[CardCode];
