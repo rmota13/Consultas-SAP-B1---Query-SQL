@@ -3,7 +3,6 @@ SELECT
 [T_Main].[Codigo_Item],
 [T_ITM].[ItemName] AS [Nome_Item],
 [T_Main].[Data_Lancamento],
-[T_Main].[Codigo_Deposito],
 [T_WHS].[WhsName] AS [Nome_Deposito],
 [T_Main].[Quantidade_Entrada],
 [T_Main].[Quantidade_Saida],
