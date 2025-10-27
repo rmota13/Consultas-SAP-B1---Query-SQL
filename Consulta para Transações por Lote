@@ -1,0 +1,34 @@
+SELECT
+[T0].[ItemCode] AS [Codigo_Item],
+[T1].[ItemName] AS [Nome_Item],
+[T0].[BatchNum] AS [Numero_Lote],
+[T0].[WhsCode] AS [Codigo_Deposito],
+[T2].[WhsName] AS [Nome_Deposito],
+[T0].[CreateDate] AS [Data_Transacao],
+CASE [T0].[BaseType]
+WHEN 13 THEN 'Fatura de Venda'
+WHEN 14 THEN 'Devolução de Venda'
+WHEN 15 THEN 'Entrega'
+WHEN 16 THEN 'Devolução de Mercadoria'
+WHEN 18 THEN 'Fatura de Compra'
+WHEN 20 THEN 'Recebimento de Mercadoria'
+WHEN 21 THEN 'Devolução de Compra'
+WHEN 67 THEN 'Transferência de Estoque'
+ELSE CAST([T0].[BaseType] AS VARCHAR(10))
+END AS [Tipo_Documento_Origem],
+[T0].[BaseNum] AS [Numero_Documento_Origem],
+[T0].[BaseLinNum] AS [Linha_Documento],
+COALESCE([T_INV].[CardName], [T_PCH].[CardName], [T_DLN].[CardName], [T_PDN].[CardName], [T_RIN].[CardName], [T_RDN].[CardName], [T_RPC].[CardName]) AS [Nome_PN],
+[T0].[Quantity] AS [Quantidade_Movimentada],
+CASE WHEN [T0].[Quantity] >= 0 THEN 'Entrada' ELSE 'Saída' END AS [Sentido]
+FROM [OIBT] AS [T0]
+INNER JOIN [OITM] AS [T1] ON [T0].[ItemCode] = [T1].[ItemCode]
+INNER JOIN [OWHS] AS [T2] ON [T0].[WhsCode] = [T2].[WhsCode]
+LEFT JOIN [OINV] AS [T_INV] ON [T0].[BaseType] = 13 AND [T0].[BaseEntry] = [T_INV].[DocEntry]
+LEFT JOIN [OPCH] AS [T_PCH] ON [T0].[BaseType] = 18 AND [T0].[BaseEntry] = [T_PCH].[DocEntry]
+LEFT JOIN [ODLN] AS [T_DLN] ON [T0].[BaseType] = 15 AND [T0].[BaseEntry] = [T_DLN].[DocEntry]
+LEFT JOIN [OPDN] AS [T_PDN] ON [T0].[BaseType] = 20 AND [T0].[BaseEntry] = [T_PDN].[DocEntry]
+LEFT JOIN [ORIN] AS [T_RIN] ON [T0].[BaseType] = 14 AND [T0].[BaseEntry] = [T_RIN].[DocEntry]
+LEFT JOIN [ORDN] AS [T_RDN] ON [T0].[BaseType] = 16 AND [T0].[BaseEntry] = [T_RDN].[DocEntry]
+LEFT JOIN [ORPC] AS [T_RPC] ON [T0].[BaseType] = 21 AND [T0].[BaseEntry] = [T_RPC].[DocEntry]
+ORDER BY [T0].[CreateDate] DESC;
