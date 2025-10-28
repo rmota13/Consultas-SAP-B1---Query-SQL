@@ -1,0 +1,24 @@
+SELECT
+[T0].[DocNum] AS [Numero_Recebimento],
+[T0].[DocDate] AS [Data_Pagamento],
+[T0].[TaxDate] AS [Data_Lancamento],
+[T0].[CardCode] AS [Codigo_Cliente],
+[T0].[CardName] AS [Nome_Cliente],
+[T0].[DocTotal] AS [Valor_Total_Recebido],
+[T3].[DocNum] AS [Numero_Fatura_Paga],
+[T2].[SumApplied] AS [Valor_Aplicado_Fatura],
+CASE
+    WHEN [T_CHK].[CheckNum] IS NOT NULL THEN 'Cheque'
+    WHEN [T_TRN].[AcctCode] IS NOT NULL THEN 'Transferência Bancária' -- Usando AcctCode como indicador
+    WHEN [T_BOE].[LineSeq] IS NOT NULL THEN 'Boleto' -- CORRIGIDO PARA LineSeq
+    WHEN [T0].[CashSum] IS NOT NULL AND [T0].[CashSum] > 0 THEN 'Dinheiro'
+    ELSE 'Outro'
+END AS [Metodo_Pagamento],
+COALESCE(CAST([T_CHK].[CheckNum] AS NVARCHAR(MAX)), [T_TRN].[Descrip], CAST([T_BOE].[LineSeq] AS NVARCHAR(MAX)), [T0].[Ref1], [T0].[Comments]) AS [Referencia_Pagamento] -- CORRIGIDO TrnsfrRef -> Descrip, BoeNum -> LineSeq
+FROM [ORCT] AS [T0]
+LEFT JOIN [RCT2] AS [T2] ON [T0].[DocEntry] = [T2].[DocNum]
+LEFT JOIN [OINV] AS [T3] ON [T2].[DocEntry] = [T3].[DocEntry] AND [T2].[InvType] = 13
+LEFT JOIN [RCT1] AS [T_CHK] ON [T0].[DocEntry] = [T_CHK].[DocNum]
+LEFT JOIN [RCT4] AS [T_TRN] ON [T0].[DocEntry] = [T_TRN].[DocNum]
+LEFT JOIN [RCT5] AS [T_BOE] ON [T0].[DocEntry] = [T_BOE].[DocNum]
+ORDER BY [T0].[DocDate] DESC, [T0].[DocNum] DESC, [T3].[DocNum];
