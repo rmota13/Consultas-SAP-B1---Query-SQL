@@ -8,15 +8,16 @@ SELECT
 [T0].[PredDate] AS [Data_Prev_Fechamento],
 [T0].[CloseDate] AS [Data_Fechamento_Real],
 [T0].[MaxSumLoc] AS [Valor_Potencial_Total],
-[T0].[WtdSumLoc] AS [Valor_Ponderado],
+[T0].[WtSumLoc] AS [Valor_Ponderado],
 CASE [T0].[Status]
 WHEN 'O' THEN 'Aberta'
 WHEN 'W' THEN 'Ganha'
 WHEN 'L' THEN 'Perdida'
 ELSE [T0].[Status]
 END AS [Status_Oportunidade],
-[T0].[Reason] AS [Motivo_Fechamento]
+[T_Reason].[Name] AS [Motivo_Fechamento] -- CORRIGIDO PARA MOSTRAR O NOME
 FROM [OOPR] AS [T0]
 LEFT JOIN [OCRD] AS [T1] ON [T0].[CardCode] = [T1].[CardCode]
 LEFT JOIN [OSLP] AS [T2] ON [T0].[SlpCode] = [T2].[SlpCode]
+LEFT JOIN [OCLS] AS [T_Reason] ON [T0].[Reason] = [T_Reason].[Code] -- ADICIONADO JOIN PARA BUSCAR O NOME DO MOTIVO
 ORDER BY [T0].[OpenDate] DESC;
