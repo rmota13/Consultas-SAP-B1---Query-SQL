@@ -1,34 +1,50 @@
 SELECT
+[T_Main].[ID_Transacao_Estoque],
+[T_Main].[Codigo_Item],
+[T_ITM].[ItemName] AS [Nome_Item],
+[T_Main].[Data_Lancamento],
+[T_WHS].[WhsName] AS [Nome_Deposito],
+[T_Main].[Quantidade_Entrada],
+[T_Main].[Quantidade_Saida],
+[T_Main].[Preco],
+[T_Main].[Tipo_de_Movimento],
+[T_Main].[Nome_Parceiro],
+[T_Main].[Numero_Documento_Origem]
+FROM
+(
+SELECT
+[T0].[TransNum] AS [ID_Transacao_Estoque],
 [T0].[ItemCode] AS [Codigo_Item],
-[T1].[ItemName] AS [Nome_Item],
-[T0].[BatchNum] AS [Numero_Lote],
-[T0].[WhsCode] AS [Codigo_Deposito],
-[T2].[WhsName] AS [Nome_Deposito],
-[T0].[CreateDate] AS [Data_Transacao],
-CASE [T0].[BaseType]
-WHEN 13 THEN 'Fatura de Venda'
+[T0].[DocDate] AS [Data_Lancamento],
+[T0].[Warehouse] AS [Codigo_Deposito],
+[T0].[InQty] AS [Quantidade_Entrada],
+[T0].[OutQty] AS [Quantidade_Saida],
+[T0].[Price] AS [Preco],
+CASE [T0].[TransType]
+WHEN 13 THEN 'Venda (Nota Fiscal de Saída)'
 WHEN 14 THEN 'Devolução de Venda'
-WHEN 15 THEN 'Entrega'
+WHEN 15 THEN 'Entrega de Mercadoria'
 WHEN 16 THEN 'Devolução de Mercadoria'
-WHEN 18 THEN 'Fatura de Compra'
-WHEN 20 THEN 'Recebimento de Mercadoria'
+WHEN 18 THEN 'Entrada por Compra (Nota Fiscal de Entrada)'
+WHEN 19 THEN 'Devolução de Compra (NC)'
+WHEN 20 THEN 'Entrada por Compra (Recebimento)'
 WHEN 21 THEN 'Devolução de Compra'
+WHEN 59 THEN 'Entrada de Mercadoria (sem compra)'
+WHEN 60 THEN 'Saída de Mercadoria (diversa)'
 WHEN 67 THEN 'Transferência de Estoque'
-ELSE CAST([T0].[BaseType] AS VARCHAR(10))
-END AS [Tipo_Documento_Origem],
-[T0].[BaseNum] AS [Numero_Documento_Origem],
-[T0].[BaseLinNum] AS [Linha_Documento],
-COALESCE([T_INV].[CardName], [T_PCH].[CardName], [T_DLN].[CardName], [T_PDN].[CardName], [T_RIN].[CardName], [T_RDN].[CardName], [T_RPC].[CardName]) AS [Nome_PN],
-[T0].[Quantity] AS [Quantidade_Movimentada],
-CASE WHEN [T0].[Quantity] >= 0 THEN 'Entrada' ELSE 'Saída' END AS [Sentido]
-FROM [OIBT] AS [T0]
-INNER JOIN [OITM] AS [T1] ON [T0].[ItemCode] = [T1].[ItemCode]
-INNER JOIN [OWHS] AS [T2] ON [T0].[WhsCode] = [T2].[WhsCode]
-LEFT JOIN [OINV] AS [T_INV] ON [T0].[BaseType] = 13 AND [T0].[BaseEntry] = [T_INV].[DocEntry]
-LEFT JOIN [OPCH] AS [T_PCH] ON [T0].[BaseType] = 18 AND [T0].[BaseEntry] = [T_PCH].[DocEntry]
-LEFT JOIN [ODLN] AS [T_DLN] ON [T0].[BaseType] = 15 AND [T0].[BaseEntry] = [T_DLN].[DocEntry]
-LEFT JOIN [OPDN] AS [T_PDN] ON [T0].[BaseType] = 20 AND [T0].[BaseEntry] = [T_PDN].[DocEntry]
-LEFT JOIN [ORIN] AS [T_RIN] ON [T0].[BaseType] = 14 AND [T0].[BaseEntry] = [T_RIN].[DocEntry]
-LEFT JOIN [ORDN] AS [T_RDN] ON [T0].[BaseType] = 16 AND [T0].[BaseEntry] = [T_RDN].[DocEntry]
-LEFT JOIN [ORPC] AS [T_RPC] ON [T0].[BaseType] = 21 AND [T0].[BaseEntry] = [T_RPC].[DocEntry]
-ORDER BY [T0].[CreateDate] DESC;
+WHEN 10000071 THEN 'Ajuste de Estoque (Inventário)'
+ELSE 'Outro Movimento'
+END AS [Tipo_de_Movimento],
+COALESCE([T_INV].[CardName], [T_PCH].[CardName], [T_DLN].[CardName], [T_PDN].[CardName], [T_RIN].[CardName], [T_RPD].[CardName], [T_RPC].[CardName]) AS [Nome_Parceiro],
+COALESCE(CAST([T_INV].[DocNum] AS VARCHAR(30)), CAST([T_PCH].[DocNum] AS VARCHAR(30)), CAST([T_DLN].[DocNum] AS VARCHAR(30)), CAST([T_PDN].[DocNum] AS VARCHAR(30)), CAST([T_RIN].[DocNum] AS VARCHAR(30)), CAST([T_RPD].[DocNum] AS VARCHAR(30)), CAST([T_RPC].[DocNum] AS VARCHAR(30))) AS [Numero_Documento_Origem]
+FROM [OINM] AS [T0]
+LEFT JOIN [OINV] AS [T_INV] ON [T0].[CreatedBy] = [T_INV].[DocEntry] AND [T0].[TransType] = 13
+LEFT JOIN [OPCH] AS [T_PCH] ON [T0].[CreatedBy] = [T_PCH].[DocEntry] AND [T0].[TransType] = 18
+LEFT JOIN [ODLN] AS [T_DLN] ON [T0].[CreatedBy] = [T_DLN].[DocEntry] AND [T0].[TransType] = 15
+LEFT JOIN [OPDN] AS [T_PDN] ON [T0].[CreatedBy] = [T_PDN].[DocEntry] AND [T0].[TransType] = 20
+LEFT JOIN [ORIN] AS [T_RIN] ON [T0].[CreatedBy] = [T_RIN].[DocEntry] AND [T0].[TransType] = 14
+LEFT JOIN [ORPD] AS [T_RPD] ON [T0].[CreatedBy] = [T_RPD].[DocEntry] AND [T0].[TransType] = 16
+LEFT JOIN [ORPC] AS [T_RPC] ON [T0].[CreatedBy] = [T_RPC].[DocEntry] AND [T0].[TransType] IN (19, 21)
+) AS [T_Main]
+LEFT JOIN [OWHS] AS [T_WHS] ON [T_Main].[Codigo_Deposito] = [T_WHS].[WhsCode]
+LEFT JOIN [OITM] AS [T_ITM] ON [T_Main].[Codigo_Item] = [T_ITM].[ItemCode];
