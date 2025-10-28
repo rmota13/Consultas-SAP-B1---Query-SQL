@@ -13,6 +13,7 @@ CASE [T0].[DocStatus] WHEN 'O' THEN 'Aberto' WHEN 'C' THEN 'Fechado' ELSE [T0].[
 [T1].[Price] AS [Preco_Unitario_Liquido],
 [T1].[LineTotal] AS [Total_Linha_Liquido],
 [T1].[AcctCode] AS [Conta_Contabil_Linha],
+T2.AcctName AS [Nome_Conta_Contabil], 
 [T1].[OcrCode] AS [Centro_Custo_1],
 [T1].[OcrCode2] AS [Centro_Custo_2],
 [T1].[VatGroup] AS [Codigo_Imposto],
@@ -20,4 +21,6 @@ CASE [T0].[DocStatus] WHEN 'O' THEN 'Aberto' WHEN 'C' THEN 'Fechado' ELSE [T0].[
 [T0].[DocTotal] AS [Total_Geral_Documento]
 FROM [OPCH] AS [T0]
 INNER JOIN [PCH1] AS [T1] ON [T0].[DocEntry] = [T1].[DocEntry]
-WHERE [T0].[DocDate] >= '2023-01-01'; -- Exemplo de filtro por data, ajuste conforme necessário
+LEFT JOIN [OACT] AS [T2] ON [T1].[AcctCode] = [T2].[AcctCode] -- JOIN COM A TABELA DE PLANO DE CONTAS
+WHERE [T0].[DocDate] BETWEEN '2023-01-01' AND '2023-12-31'
+ORDER BY [T0].[DocDate] DESC
