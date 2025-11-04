@@ -1,5 +1,6 @@
 SELECT
-[T0].[DocNum] AS [Numero_Fatura],
+[T0].[DocNum] AS [Numero_Interno_SAP],
+[T0].[Serial] AS [Numero_Nota_Fiscal],
 [T0].[DocDate] AS [Data_Documento],
 [T0].[CardCode] AS [Codigo_Cliente],
 [T0].[CardName] AS [Nome_Cliente],
