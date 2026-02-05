@@ -1,6 +1,6 @@
 SELECT
 [T0].[DocNum] AS [Numero_Interno_SAP],
-[T0].[Serial] AS [Numero_Nota_Fiscal],
+[T0].[Serial] AS [Nº_NF],
 [T0].[DocDate] AS [Data_Documento],
 [T0].[DocDueDate] AS [Data_Vencimento],
 [T0].[CardCode] AS [Codigo_Cliente],
