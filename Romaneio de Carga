@@ -1,0 +1,27 @@
+SELECT 
+    -- DADOS DO REMETENTE (SUA EMPRESA)
+    T3."PrintHeadr" AS "Empresa_Nome",
+    T3."TaxIdNum" AS "Empresa_CNPJ",
+    
+    -- DADOS DO DESTINATÁRIO (CLIENTE)
+    T0."DocNum" AS "Num_Pedido",
+    T0."CardCode" AS "Cod_Cliente",
+    T0."CardName" AS "Cliente_Nome",
+    T0."Address2" AS "Endereco_Entrega",
+    
+    -- DADOS DOS ITENS
+    T1."ItemCode" AS "Cod_Item",
+    T1."Dscription" AS "Descricao_Item",
+    T1."Quantity" AS "Quantidade",
+    T1."UnitMsr" AS "Unidade",
+    
+    -- PESOS (Ajuste do campo de peso se usar outro campo no OITM)
+    ISNULL(T2."SWeight1", 0) AS "Peso_Unitario",
+    (T1."Quantity" * ISNULL(T2."SWeight1", 0)) AS "Peso_Total_Linha"
+
+FROM ORDR T0
+INNER JOIN RDR1 T1 ON T0."DocEntry" = T1."DocEntry"
+INNER JOIN OITM T2 ON T1."ItemCode" = T2."ItemCode"
+CROSS JOIN OADM T3 -- Puxa os dados da empresa (cabeçalho)
+
+WHERE T0."DocEntry" = {?DocKey@}
