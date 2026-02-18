@@ -1,0 +1,35 @@
+SELECT 
+    CASE 
+        WHEN T0.IsIns = 'Y' THEN 'NF Entrega Futura' 
+        ELSE 'NF Saída' 
+    END AS 'Tipo_Documento',
+    T0.DocNum AS 'Numero_Interno_SAP', 
+    T0.Serial AS 'Nº_Nota_Fiscal',
+    T0.CardCode AS 'CardCode', 
+    T0.CardName AS 'Nome_PN', 
+    T0.DocDate AS 'Data_Documento',
+    T0.DocDueDate AS 'Data_Vencimento',
+    T3.SlpName AS 'Vendedor', 
+    T4.PymntGroup AS 'Condicao_Pagamento',
+    
+    -- Detalhes do Produto
+    T1.ItemCode AS 'Codigo_Produto',
+    T1.Dscription AS 'Descricao_Produto',
+    CONVERT(INT, T1.Quantity) AS 'Quantidade_Vendida',
+    CAST(T1.Price AS DECIMAL(19,2)) AS 'Preco_Unitario',
+    CAST(T1.LineTotal AS DECIMAL(19,2)) AS 'Total_Linha',
+    
+    -- Valores de Cabeçalho (Aparecem apenas na linha 1 de cada nota para evitar duplicidade na soma)
+    CAST(CASE WHEN T1.LineNum = 0 THEN T0.TotalExpns ELSE 0 END AS DECIMAL(19,2)) AS 'Despesas_Adicionais_Doc', 
+    CAST(CASE WHEN T1.LineNum = 0 THEN T0.DiscSum ELSE 0 END AS DECIMAL(19,2)) AS 'Descontos_Doc',
+    CAST(CASE WHEN T1.LineNum = 0 THEN T0.DpmAmnt ELSE 0 END AS DECIMAL(19,2)) AS 'Adiantamento_Total_Doc',
+    CAST(CASE WHEN T1.LineNum = 0 THEN (T0.DocTotal - T0.VatSum + T0.DpmAmnt) ELSE 0 END AS DECIMAL(19,2)) AS 'Total_Calculado_Nota'
+
+FROM OINV T0
+INNER JOIN INV1 T1 ON T0.DocEntry = T1.DocEntry
+INNER JOIN OSLP T3 ON T0.SlpCode = T3.SlpCode
+LEFT JOIN OCTG T4 ON T0.GroupNum = T4.GroupNum
+
+WHERE T0.CANCELED <> 'Y'
+
+ORDER BY T0.DocNum DESC, T1.LineNum ASC
