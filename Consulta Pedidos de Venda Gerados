@@ -1,0 +1,19 @@
+SELECT 
+    T2.DocNum AS 'Doc No.', 
+    T2.CardCode AS 'CardCode', 
+    T2.CardName AS 'Nome_PN', 
+    T2.DocDate AS 'Data_Documento',
+    T2.DocDueDate AS 'Data_Vencimento',
+    T3.SlpName AS 'Vendedor', 
+    T4.PymntGroup AS 'Condicao_Pagamento',
+    (SELECT SUM(T1.LineTotal) 
+     FROM RDR1 T1 
+     WHERE T1.DocEntry = T2.DocEntry) AS 'Total da linha',
+    CAST(T2.TotalExpns AS DECIMAL(19,2)) AS 'Despesas Adicionais', 
+    CAST(T2.DiscSum AS DECIMAL(19,2)) AS 'Descontos',
+    CAST((T2.DocTotal - T2.VatSum) AS DECIMAL(19,2)) AS 'Total do documento após desconto'
+FROM ORDR T2
+INNER JOIN OSLP T3 ON T2.SlpCode = T3.SlpCode
+LEFT JOIN OCTG T4 ON T2.GroupNum = T4.GroupNum
+WHERE T2.CANCELED <> 'Y'
+ORDER BY T2.DocNum DESC
