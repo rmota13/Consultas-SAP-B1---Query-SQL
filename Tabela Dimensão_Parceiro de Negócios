@@ -27,16 +27,16 @@ SELECT
     [T_ST_E].[Name] AS [Entrega_Estado],
     [T1].[ZipCode] AS [Entrega_CEP]
 FROM [OCRD] AS [T0]
--- Join de endereço de entrega padrão
+
 LEFT JOIN [CRD1] AS [T1] ON [T0].[CardCode] = [T1].[CardCode] 
     AND [T1].[AdresType] = 'S' 
     AND [T0].[ShipToDef] = [T1].[Address]
--- Join de grupo de PN
+
 LEFT JOIN [OCRG] AS [T2] ON [T0].[GroupCode] = [T2].[GroupCode]
--- Join de Estados (Ajustado para campos universais SBO)
+
 LEFT JOIN [OCST] AS [T_ST_C] ON [T0].[State1] = [T_ST_C].[Code] AND [T0].[Country] = [T_ST_C].[Country]
 LEFT JOIN [OCST] AS [T_ST_E] ON [T1].[State] = [T_ST_E].[Code] AND [T1].[Country] = [T_ST_E].[Country]
--- Subquery para garantir apenas uma linha fiscal por PN e evitar duplicidade
+
 LEFT JOIN (
     SELECT 
         Internal.CardCode, 
