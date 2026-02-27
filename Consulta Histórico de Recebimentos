@@ -1,11 +1,11 @@
 SELECT
-T0.DocNum                    AS Numero_Recebimento,
+T0.DocNum                    AS Nº_Recebimento,
 T0.DocDate                   AS Data_Pagamento,
-T0.CardCode                  AS Codigo_Cliente,
+T0.CardCode                  AS Cod_Cliente,
 T0.CardName                  AS Nome_Cliente,
 T0.DocTotal                  AS Valor_Total_Recebido,
 
-T3.DocNum                    AS Numero_Fatura,
+T3.Serial                    AS Nº_NF,
 T3.DocDate                   AS Data_Fatura,
 T3.DocTotal                  AS Valor_Total_Venda,
 T3.PaidToDate                AS Valor_Recebido_Fatura,
@@ -13,14 +13,6 @@ T3.PaidToDate                AS Valor_Recebido_Fatura,
 
 T6.PymntGroup                AS Condicao_Pagamento,
 T2.SumApplied                AS Valor_Aplicado_Recebimento,
-
-CASE
-    WHEN T_CHK.CheckNum IS NOT NULL THEN 'Cheque'
-    WHEN T_TRN.AcctCode IS NOT NULL THEN 'Transferência Bancária'
-    WHEN T_BOE.LineSeq IS NOT NULL THEN 'Boleto'
-    WHEN T0.CashSum > 0 THEN 'Dinheiro'
-    ELSE 'Outro'
-END AS Metodo_Pagamento,
 
 COALESCE(
     CAST(T_CHK.CheckNum AS NVARCHAR(50)),
